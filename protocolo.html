@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerador de Protocolo de Contrato</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  .required:after{content:" *";color:#dc3545}
+  .upload-ok{color:#28a745;font-size:.875rem;margin-left:.5rem}
+  #summary{
+    width:595pt;height:842pt;padding:32pt;
+    font:12px/1.35 Arial,Helvetica,sans-serif;
+    box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between
+  }
+  #summary h2{margin:0;text-align:center}
+  #summary table{font-size:10px;width:100%;border-collapse:collapse}
+  #summary th,#summary td{border:1px solid #000;padding:2px 4px}
+  input[type=number].hide-arrows::-webkit-inner-spin-button,
+  input[type=number].hide-arrows::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number].hide-arrows{-moz-appearance:textfield}
+</style>
+</head>
+<body class="bg-light">
+
+<div class="container my-4">
+  <h1 class="mb-3 text-center fw-bold">Imobiliária Camargo – Gerador de Protocolo de Contrato</h1>
+
+  <form id="protocolForm" novalidate>
+    <!-- ===================== CORRETOR ===================== -->
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label required">Nome completo do Corretor</label>
+        <input type="text" id="corretorNome" class="form-control" required>
+      </div>
+    </div>
+
+    <!-- ===================== DOCUMENTOS DO IMÓVEL ===================== -->
+    <h3 class="mt-4">Documentos do Imóvel</h3>
+    <div class="border rounded p-3 mb-4">
+      <div class="mb-3">
+        <label class="form-label required">Matrícula atualizada com ônus e ações</label>
+        <input type="file" id="docMatriz" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required me-3">CND Joinville – Certidão do imóvel
+          <a href="https://tmiweb.joinville.sc.gov.br/sefaz/jsp/cnd/index.jsp" target="_blank">(link)</a>
+        </label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="cndPlanta">
+          <label class="form-check-label" for="cndPlanta">Imóvel na planta</label>
+        </div>
+        <input type="file" id="docCndImovel" class="form-control mt-2" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required">CND Joinville – Diversas
+          <a href="https://tmiweb.joinville.sc.gov.br/sefaz/jsp/cnd/index.jsp" target="_blank">(link)</a></label>
+        <input type="file" id="docCndDiversas" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required">CND Estadual
+          <a href="https://sat.sef.sc.gov.br/tax.NET/Sat.CtaCte.Web/SolicitacaoCnd.aspx" target="_blank">(link)</a></label>
+        <input type="file" id="docCndEstadual" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required">CND Federal
+          <a href="https://solucoes.receita.fazenda.gov.br/servicos/certidaointernet/pj/emitir" target="_blank">(link)</a></label>
+        <input type="file" id="docCndFederal" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label required me-3">CEAT
+          <a href="https://pje.trt12.jus.br/certidoes/trabalhista/emissao" target="_blank">(link)</a>
+        </label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="ceatPF">
+          <label class="form-check-label" for="ceatPF">Pessoa Física</label>
+        </div>
+        <input type="file" id="docCeat" class="form-control mt-2" required>
+      </div>
+    </div>
+
+    <!-- ===================== DOCUMENTOS DOS VENDEDORES ===================== -->
+    <h3>Documentos dos Vendedores</h3>
+    <div class="border rounded p-3 mb-4">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label required">Tipo de pessoa</label>
+          <select id="vendorPersonType" class="form-select" required>
+            <option value="">Selecione</option><option value="fisica">Pessoa Física</option><option value="juridica">Pessoa Jurídica</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-none" id="vendorCasadoDiv">
+          <label class="form-label">&nbsp;</label>
+          <div class="form-check">
+            <input type="checkbox" id="vendorCasado" class="form-check-input">
+            <label class="form-check-label" for="vendorCasado">Casado(a)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PF vendedor -->
+      <div id="vendorPF" class="mt-3 d-none">
+        <div class="mb-3"><label class="form-label required">RG / CPF</label><input type="file" id="vendorRgCpf" class="form-control"></div>
+        <div class="mb-3"><label class="form-label required">Comprovante de Residência</label><input type="file" id="vendorResidencia" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">Profissão</label><input type="text" id="vendorProfissao" class="form-control"></div>
+
+        <div id="vendorConjuge" class="d-none">
+          <h6>Cônjuge</h6>
+          <div class="mb-3"><label class="form-label required">RG / CPF (Cônjuge)</label><input type="file" id="vendorConjRgCpf" class="form-control"></div>
+          <div class="mb-3"><label class="form-label required">Comprovante de Residência (Cônjuge)</label><input type="file" id="vendorConjResidencia" class="form-control"></div>
+          <div class="mb-3"><label class="form-label">Profissão (Cônjuge)</label><input type="text" id="vendorConjProfissao" class="form-control"></div>
+        </div>
+      </div>
+
+      <!-- PJ vendedor -->
+      <div id="vendorPJ" class="mt-3 d-none"><div class="mb-3"><label class="form-label required">Contrato Social</label><input type="file" id="vendorContrato" class="form-control"></div></div>
+    </div>
+
+    <!-- ===================== DOCUMENTOS DOS COMPRADORES ===================== -->
+    <h3>Documentos dos Compradores</h3>
+    <div class="border rounded p-3 mb-4">
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label required">Tipo de pessoa</label>
+          <select id="buyerPersonType" class="form-select" required>
+            <option value="">Selecione</option><option value="fisica">Pessoa Física</option><option value="juridica">Pessoa Jurídica</option>
+          </select></div>
+        <div class="col-md-4 d-none" id="buyerCasadoDiv"><label class="form-label">&nbsp;</label>
+          <div class="form-check"><input type="checkbox" id="buyerCasado" class="form-check-input"><label class="form-check-label" for="buyerCasado">Casado(a)</label></div></div>
+      </div>
+
+      <!-- PF comprador -->
+      <div id="buyerPF" class="mt-3 d-none">
+        <div class="mb-3"><label class="form-label required">RG / CPF</label><input type="file" id="buyerRgCpf" class="form-control"></div>
+        <div class="mb-3"><label class="form-label required">Comprovante de Residência</label><input type="file" id="buyerResidencia" class="form-control"></div>
+        <div class="mb-3"><label class="form-label">Profissão</label><input type="text" id="buyerProfissao" class="form-control"></div>
+
+        <div id="buyerConjuge" class="d-none">
+          <h6>Cônjuge</h6>
+          <div class="mb-3"><label class="form-label required">RG / CPF (Cônjuge)</label><input type="file" id="buyerConjRgCpf" class="form-control"></div>
+          <div class="mb-3"><label class="form-label required">Comprovante de Residência (Cônjuge)</label><input type="file" id="buyerConjResidencia" class="form-control"></div>
+          <div class="mb-3"><label class="form-label">Profissão (Cônjuge)</label><input type="text" id="buyerConjProfissao" class="form-control"></div>
+        </div>
+      </div>
+
+      <!-- PJ comprador -->
+      <div id="buyerPJ" class="mt-3 d-none"><div class="mb-3"><label class="form-label required">Contrato Social</label><input type="file" id="buyerContrato" class="form-control"></div></div>
+    </div>
+
+    <!-- ===================== DADOS DO IMÓVEL / CONTRATO ===================== -->
+    <h4 class="mt-4">Dados do Imóvel / Contrato</h4>
+    <div class="row g-3">
+      <div class="col-md-4"><label class="form-label required">Código do imóvel no CRM</label>
+        <input type="text" id="imovelCodigo" class="form-control" required></div>
+      <div class="col-md-4"><label class="form-label required">Tipo de contrato</label>
+        <select id="tipoContrato" class="form-select" required>
+          <option value="">Selecione</option><option>Pré-contrato</option><option>Padrão Planta</option><option>Padrão Pronto</option>
+        </select></div>
+      <div class="col-md-4"><label class="form-label required">Endereço completo</label>
+        <input type="text" id="enderecoCompleto" class="form-control" required></div>
+      <div class="col-md-4"><label class="form-label">Unidade vendida</label>
+        <input type="text" id="unidadeVendida" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label required">Tipo do imóvel</label>
+        <select id="tipoImovel" class="form-select" required>
+          <option value="">Selecione</option><option>Planta baixa</option><option>Sobrado</option><option>Apartamento</option>
+        </select></div>
+      <div class="col-md-4"><label class="form-label">Metragem quadrada (m²)</label>
+        <input type="number" id="metragem" class="form-control hide-arrows" min="0" step="0.01"></div>
+    </div>
+
+    <!-- QUANTIDADES -->
+    <h5 class="mt-4">Quantidades</h5>
+    <div class="row g-2">
+      <div class="col-6 col-md-3"><label class="form-label">Vagas de garagem</label>
+        <input type="number" id="qVagas" class="form-control hide-arrows" min="0"></div>
+      <div id="vagaTiposContainer" class="col-12"></div>
+
+      <div class="col-6 col-md-3"><label class="form-label">Cozinhas</label><input type="number" id="qCozinhas" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Lavabos</label><input type="number" id="qLavabos" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Salas</label><input type="number" id="qSalas" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Quartos (sem suíte)</label><input type="number" id="qQuartos" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Suítes</label><input type="number" id="qSuites" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Banheiros sociais</label><input type="number" id="qBanheiros" class="form-control hide-arrows" min="0"></div>
+      <div class="col-6 col-md-3"><label class="form-label">Outros ambientes</label><input type="text" id="outrosAmbientes" class="form-control"></div>
+    </div>
+
+    <!-- ACABAMENTOS -->
+    <h5 class="mt-4">Acabamentos</h5>
+    <div class="row g-2">
+      <div class="col-md-4"><label class="form-label">Rebaixo em gesso?</label>
+        <select id="rebaixoGesso" class="form-select">
+          <option>Não</option><option>Em todos os ambientes</option><option>Sala e cozinha</option>
+        </select></div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Paredes</label>
+        <div class="form-check"><input type="checkbox" value="Massa Corrida" id="parede1" class="form-check-input"><label class="form-check-label">Massa Corrida</label></div>
+        <div class="form-check"><input type="checkbox" value="Reboco" id="parede2" class="form-check-input"><label class="form-check-label">Reboco</label></div>
+        <div class="form-check"><input type="checkbox" value="Gesso Vitrificado" id="parede3" class="form-check-input"><label class="form-check-label">Gesso Vitrificado</label></div>
+      </div>
+      <div class="col-md-6"><label class="form-label">1º piso</label>
+        <div class="form-check"><input type="checkbox" value="Tipo A" id="piso1a" class="form-check-input"><label class="form-check-label">Tipo A</label></div>
+        <div class="form-check"><input type="checkbox" value="Porcelanato" id="piso1b" class="form-check-input"><label class="form-check-label">Porcelanato</label></div>
+        <div class="form-check"><input type="checkbox" value="Laminado" id="piso1c" class="form-check-input"><label class="form-check-label">Laminado</label></div>
+        <div class="form-check"><input type="checkbox" value="Vinílico" id="piso1e" class="form-check-input"><label class="form-check-label">Vinílico</label></div>
+        <div class="form-check"><input type="checkbox" value="Contrapiso" id="piso1d" class="form-check-input"><label class="form-check-label">Contrapiso</label></div>
+      </div>
+      <div class="col-md-6"><label class="form-label">2º piso</label>
+        <div class="form-check"><input type="checkbox" value="Tipo A" id="piso2a" class="form-check-input"><label class="form-check-label">Tipo A</label></div>
+        <div class="form-check"><input type="checkbox" value="Porcelanato" id="piso2b" class="form-check-input"><label class="form-check-label">Porcelanato</label></div>
+        <div class="form-check"><input type="checkbox" value="Laminado" id="piso2c" class="form-check-input"><label class="form-check-label">Laminado</label></div>
+        <div class="form-check"><input type="checkbox" value="Vinílico" id="piso2e" class="form-check-input"><label class="form-check-label">Vinílico</label></div>
+        <div class="form-check"><input type="checkbox" value="Contrapiso" id="piso2d" class="form-check-input"><label class="form-check-label">Contrapiso</label></div>
+      </div>
+      <div class="col-md-6"><label class="form-label">Portão</label>
+        <div class="form-check"><input type="checkbox" value="Basculante" id="portao1" class="form-check-input"><label class="form-check-label">Basculante</label></div>
+        <div class="form-check"><input type="checkbox" value="Elevação" id="portao2" class="form-check-input"><label class="form-check-label">Elevação</label></div>
+        <div class="form-check"><input type="checkbox" value="Simples" id="portao3" class="form-check-input"><label class="form-check-label">Simples</label></div>
+      </div>
+      <div class="col-md-6"><label class="form-label">Outros acabamentos</label><input type="text" id="outrosAcabamentos" class="form-control"></div>
+      <div class="col-md-6"><label class="form-label">Prazo de entrega</label><input type="text" id="prazoEntrega" class="form-control"></div>
+    </div>
+
+    <!-- ===================== COMISSÃO ===================== -->
+    <h5 class="mt-4">Comissão</h5>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-2"><label class="form-label">%</label>
+        <input type="number" id="comPercent" class="form-control hide-arrows" min="0" step=".01"></div>
+      <div class="col-md-4"><label class="form-label">de (R$)</label>
+        <input type="text" id="comDe" class="form-control currency"></div>
+      <div class="col-md-3"><label class="form-label">Bônus (R$)</label>
+        <input type="text" id="comBonus" class="form-control currency"></div>
+      <div class="col-md-3">
+        <label class="form-label required">Formas de recebimento da comissão:</label>
+        <select id="comForma" class="form-select" required>
+          <option value="">Selecione</option>
+          <option>50% do Sinal + 50% das parcelas subsequentes</option>
+          <option>50% do Sinal + Saldo no financiamento</option>
+          <option>50% do Sinal + parcelas intercaladas</option>
+          <option>50% do Sinal + parcelas subsequentes</option>
+          <option>50%/50% com a construtora</option>
+          <option>Intercalado</option>
+          <option>No financiamento</option>
+          <option>No financiamento bancário</option>
+          <option>Sinal imob + 50% das parcelas subsequentes</option>
+          <option>Sinal imob + Saldo no financiamento</option>
+          <option>Sinal imob + parcelas intercaladas</option>
+          <option>Sinal imob + parcelas subsequentes</option>
+          <option>Tudo conforme entrar</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="col-md-6 d-none" id="comOutroDiv">
+        <label class="form-label">Descreva</label>
+        <input type="text" id="comOutro" class="form-control">
+      </div>
+    </div>
+
+    <!-- BÔNUS -->
+    <div class="row g-3 mt-3">
+      <div class="col-md-6">
+        <label class="form-label">Formas de recebimento do bônus:</label>
+        <select id="bonusForma" class="form-select">
+          <option value="">Selecione</option>
+          <option>Nas parcelas subsequentes da comissão</option>
+          <option>Na entrega das chaves</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===================== VALOR & FLUXO ===================== -->
+    <h5 class="mt-4">Fluxo / Valor do imóvel</h5>
+    <div class="row g-3">
+      <div class="col-md-4"><label class="form-label required">Valor do imóvel</label>
+        <input type="text" id="valorImovel" class="form-control currency" required></div>
+      <div class="col-md-4 align-self-end">
+        <div class="form-check"><input type="checkbox" id="documentacaoInclusa" class="form-check-input">
+          <label class="form-check-label" for="documentacaoInclusa">Documentação inclusa</label></div>
+      </div>
+      <div class="col-md-4 d-none" id="valorDocDiv"><label class="form-label">Valor da documentação</label>
+        <input type="text" id="valorDocumentacao" class="form-control currency"></div>
+    </div>
+
+    <table class="table table-bordered mt-3" id="fluxTable">
+      <thead class="table-light"><tr><th>Parcela</th><th>Parcela (R$)</th><th>Total (R$)</th><th>Vencimento</th><th>Observação</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="mb-3"><strong>Total Fluxo:</strong> <span id="fluxTotal">R$ 0,00</span></div>
+
+    <!-- SENHA + BOTÃO -->
+    <div class="row g-3"><div class="col-md-3"><label class="form-label">Senha de Gerência</label>
+      <input type="password" id="managerPwd" class="form-control" placeholder="digite para liberar incompleto"></div></div>
+
+    <div class="progress d-none mt-3 mb-3" id="zipProgress"><div class="progress-bar" role="progressbar" style="width:0%">0%</div></div>
+    <button type="submit" class="btn btn-primary">Gerar Protocolo</button>
+  </form>
+</div>
+
+<!-- ===================== RESUMO PDF ===================== -->
+<div id="summary" style="display:none">
+  <h2>Protocolo de Contrato – Imobiliária Camargo</h2>
+  <div id="summaryContent" style="flex:1 1 auto"></div>
+  <table><tr><td><hr></td><td><hr></td><td><hr></td></tr><tr><td>Captador</td><td>Corretor</td><td>Coordenador</td></tr></table>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<script>
+/* ——— helpers moeda ——— */
+const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}),
+      parse=s=>parseFloat(s.replace(/[^\d,-]/g,'').replace(/\./g,'').replace(',','.'))||0;
+document.addEventListener('blur',e=>{if(e.target.classList.contains('currency'))e.target.value=e.target.value?fmt(parse(e.target.value)):'';},true);
+
+/* ——— upload feedback + arquivos opcionais ——— */
+const toggleFile=(chk,file)=>{file.disabled=chk.checked;file.required=!chk.checked;if(chk.checked){file.value='';const ok=file.parentElement.querySelector('.upload-ok');ok&&ok.remove();}};
+cndPlanta.addEventListener('change',()=>toggleFile(cndPlanta,docCndImovel));
+ceatPF   .addEventListener('change',()=>toggleFile(ceatPF,docCeat));
+document.querySelectorAll('input[type=file]').forEach(inp=>inp.addEventListener('change',()=>{if(!inp.parentElement.querySelector('.upload-ok')){const s=document.createElement('span');s.className='upload-ok';s.textContent='Upload concluído';inp.parentElement.appendChild(s);}}));
+
+/* ——— documentação inclusa ——— */
+documentacaoInclusa.addEventListener('change',()=>valorDocDiv.classList.toggle('d-none',!documentacaoInclusa.checked));
+
+/* ——— comissão outro ——— */
+comForma.addEventListener('change',()=>comOutroDiv.classList.toggle('d-none',comForma.value!=='Outro'));
+
+/* ——— vagas dinâmicas ——— */
+function updateVagas(){const n=parseInt(qVagas.value)||0,c=vagaTiposContainer;c.innerHTML='';if(n>0){const row=document.createElement('div');row.className='row g-2';for(let i=0;i<n;i++){row.innerHTML+=`<div class="col-6 col-md-3"><label class="form-label">${n>1?'Tipo vaga '+(i+1):'Tipo da vaga'}</label><select class="form-select vagaTipoSelect"><option>Descoberta</option><option>Semi Coberta</option><option>Coberta</option></select></div>`;}c.appendChild(row);} }
+qVagas.addEventListener('input',updateVagas);updateVagas();
+
+/* ——— blocos PF/PJ ——— */
+function toggleSections(){vendorPF.classList.toggle('d-none',vendorPersonType.value!=='fisica');vendorPJ.classList.toggle('d-none',vendorPersonType.value!=='juridica');vendorCasadoDiv.classList.toggle('d-none',vendorPersonType.value!=='fisica');vendorConjuge.classList.toggle('d-none',!vendorCasado.checked);buyerPF.classList.toggle('d-none',buyerPersonType.value!=='fisica');buyerPJ.classList.toggle('d-none',buyerPersonType.value!=='juridica');buyerCasadoDiv.classList.toggle('d-none',buyerPersonType.value!=='fisica');buyerConjuge.classList.toggle('d-none',!buyerCasado.checked);}
+document.addEventListener('change',e=>{if(['vendorPersonType','vendorCasado','buyerPersonType','buyerCasado'].includes(e.target.id))toggleSections();});toggleSections();
+
+/* ——— tabela fluxo ——— */
+const tbody=document.querySelector('#fluxTable tbody');
+for(let i=0;i<10;i++){const tr=document.createElement('tr');tr.innerHTML=`<td><input type="number" class="form-control hide-arrows qtd"></td><td><input type="text" class="form-control valorParc currency"></td><td><input type="text" class="form-control totalLinha" readonly></td><td><input type="date" class="form-control venc"></td><td><select class="form-select obsSelect"><option value="">Selecione</option><option>SINAL DE NEGÓCIO</option><option>PARCELAMENTO</option><option>BALÃO</option><option>Chaves</option><option>FGTS</option><option>Financiamento Bancário</option><option>CARRO</option></select><div class="carro-extra d-none mt-1"><input type="text" class="form-control mb-1 carroModelo" placeholder="Modelo"><input type="number" class="form-control mb-1 hide-arrows carroAno" placeholder="Ano" min="1900" max="9999"><input type="text" class="form-control carroValor currency" placeholder="Valor"></div></td>`;tbody.appendChild(tr);}
+function calcRow(r){const q=parseFloat(r.querySelector('.qtd').value)||0;const v=parse(r.querySelector('.valorParc').value);r.querySelector('.totalLinha').value=q*v?fmt(q*v):'';}
+function calcTot(){let t=0;document.querySelectorAll('.totalLinha').forEach(i=>t+=parse(i.value));fluxTotal.textContent=fmt(t);}
+tbody.addEventListener('input',e=>{const tr=e.target.closest('tr');if(tr){calcRow(tr);calcTot();}});
+tbody.addEventListener('blur',e=>{if(e.target.classList.contains('valorParc')||e.target.classList.contains('carroValor'))e.target.value=e.target.value?fmt(parse(e.target.value)):'';},true);
+tbody.addEventListener('change',e=>{if(e.target.classList.contains('obsSelect')){const extra=e.target.closest('td').querySelector('.carro-extra');extra.classList.toggle('d-none',e.target.value!=='CARRO');}});
+
+/* ——— resumo ——— */
+function buildSummary(){
+  const sc=document.getElementById('summaryContent');sc.innerHTML='';
+  const add=(l,v)=>sc.insertAdjacentHTML('beforeend',`<p><strong>${l}:</strong> ${v}</p>`);
+
+  add('Corretor',corretorNome.value);
+  add('Profissão vendedor',vendorProfissao.value||'-');
+  if(vendorConjProfissao.value)add('Profissão cônjuge vendedor',vendorConjProfissao.value);
+  add('Profissão comprador',buyerProfissao.value||'-');
+  if(buyerConjProfissao.value)add('Profissão cônjuge comprador',buyerConjProfissao.value);
+
+  add('Código CRM',imovelCodigo.value);
+  add('Tipo contrato',tipoContrato.value);
+  add('Endereço',enderecoCompleto.value);
+  add('Unidade vendida',unidadeVendida.value||'-');
+  add('Tipo imóvel',tipoImovel.value);
+  add('Metragem',metragem.value?metragem.value+' m²':'-');
+
+  const vagaTipos=[...document.querySelectorAll('.vagaTipoSelect')].map(s=>s.value).join(', ')||'-';
+  add('Quantidades',`Vagas:${qVagas.value||0} (${vagaTipos}) · Cozinhas:${qCozinhas.value||0} · Lavabos:${qLavabos.value||0} · Salas:${qSalas.value||0} · Quartos:${qQuartos.value||0} · Suítes:${qSuites.value||0} · Banheiros:${qBanheiros.value||0} · Outros:${outrosAmbientes.value||'-'}`);
+
+  const chk=sel=>[...document.querySelectorAll(sel+':checked')].map(c=>c.value).join(', ')||'-';
+  add('Rebaixo gesso',rebaixoGesso.value);
+  add('Paredes',chk('input[id^="parede"]'));
+  add('1º piso',chk('input[id^="piso1"]'));
+  add('2º piso',chk('input[id^="piso2"]'));
+  add('Portão',chk('input[id^="portao"]'));
+  add('Outros acabamentos',outrosAcabamentos.value||'-');
+  add('Prazo entrega',prazoEntrega.value||'-');
+
+  add('Comissão',`${comPercent.value||0}% de ${comDe.value||'-'} + Bônus ${comBonus.value||'-'}`);
+  add('Forma receb. comissão',comForma.value==='Outro'?comOutro.value:comForma.value);
+  add('Forma receb. bônus',bonusForma.value||'-');
+  add('Valor imóvel',valorImovel.value);
+  add('Documentação inclusa',documentacaoInclusa.checked?valorDocumentacao.value||'Sim':'Não');
+
+  /* Fluxo completo */
+  const rows=[...tbody.querySelectorAll('tr')].map(r=>{
+    const p=r.querySelector('.qtd').value.trim(),v=r.querySelector('.valorParc').value.trim(),
+          t=r.querySelector('.totalLinha').value.trim(),d=r.querySelector('.venc').value.trim(),
+          sel=r.querySelector('.obsSelect').value.trim();
+    if(!p&&!v&&!t&&!d&&!sel)return '';
+    let obs=sel;if(sel==='CARRO'){const m=r.querySelector('.carroModelo').value||'-',
+                                 a=r.querySelector('.carroAno').value||'-',
+                                 vl=r.querySelector('.carroValor').value||'-';obs=`CARRO — ${m}/${a}/${vl}`;}
+    return `<tr><td>${p}</td><td>${v}</td><td>${t}</td><td>${d}</td><td>${obs}</td></tr>`;
+  }).filter(Boolean).join('');
+  if(rows)sc.insertAdjacentHTML('beforeend',`<h4 class="mt-3">Fluxo</h4><table><thead><tr><th>Parc.</th><th>Parc.(R$)</th><th>Total(R$)</th><th>Venc.</th><th>Obs.</th></tr></thead><tbody>${rows}</tbody></table>`);
+}
+
+/* ——— gera zip ——— */
+async function buildZip(pdfBlob){
+  const uploads=[...document.querySelectorAll('input[type=file]')].filter(f=>f.files.length);
+  if(!uploads.length)return;
+  const zip=new JSZip();zip.file('protocolo.pdf',pdfBlob);uploads.forEach(f=>zip.file(f.files[0].name,f.files[0]));
+  const prog=document.getElementById('zipProgress'),bar=prog.querySelector('.progress-bar');prog.classList.remove('d-none');
+  const blob=await zip.generateAsync({type:'blob'},m=>{bar.style.width=m.percent+'%';bar.textContent=Math.round(m.percent)+'%';});
+  saveAs(blob,'anexos.zip');bar.textContent='Concluído';bar.style.width='100%';setTimeout(()=>prog.classList.add('d-none'),1500);
+}
+
+/* ——— submit ——— */
+protocolForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!protocolForm.checkValidity()&&managerPwd.value.trim()!=='3220'){alert('Preencha campos obrigatórios ou use a senha de gerência.');return;}
+  valorImovel.dispatchEvent(new Event('blur'));if(documentacaoInclusa.checked)valorDocumentacao.dispatchEvent(new Event('blur'));
+  if(parse(valorImovel.value)!==parse(fluxTotal.textContent)){alert('Total do fluxo diferente do valor do imóvel.');return;}
+
+  buildSummary();
+  const {jsPDF}=window.jspdf;summary.style.display='block';const canvas=await html2canvas(summary,{scale:2});summary.style.display='none';
+  const pdf=new jsPDF({unit:'pt',format:'a4'});pdf.addImage(canvas,'PNG',0,0,595,842);
+  const pdfBlob=pdf.output('blob');saveAs(pdfBlob,'protocolo.pdf');await buildZip(pdfBlob);
+});
+</script>
+</body>
+</html>

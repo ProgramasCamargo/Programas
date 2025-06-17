@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Obra</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { background-color: #f2f2f2; padding: 10px; }
+        .section { margin-bottom: 20px; }
+        label { display: block; margin: 5px 0 2px; }
+        input, select { width: 200px; padding: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        textarea { width: 100%; height: 150px; margin-top: 10px; }
+        .highlight { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>Simulador de Obra</h1>
+
+<div class="section">
+    <h2>Dados Financeiros</h2>
+    <label>Custo por m²: <input id="custo_m2" type="number" step="0.01"></label>
+    <label>Lucro Esperado (%): <input id="lucro_esperado" type="number" step="0.01"></label>
+    <label>% Imposto: <input id="imposto" type="number" step="0.01"></label>
+    <label>% Comissão: <input id="comissao" type="number" step="0.01"></label>
+    <label>Valor da Permuta/Terreno ou Comissão: <input id="valor_permuta_extra" type="number" step="0.01"></label>
+</div>
+
+<div class="section">
+    <h2>Unidades</h2>
+    <table id="unidades_table">
+        <thead>
+            <tr>
+                <th>Proprietário</th><th>Metragem</th><th>Quantidade</th><th>Total m²</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script>
+                for (let i = 0; i < 5; i++) {
+                    document.write('<tr>' +
+                        '<td><select><option>Permuta</option><option>Construtora</option></select></td>' +
+                        '<td><input type="number" step="0.01"></td>' +
+                        '<td><input type="number" step="1"></td>' +
+                        '<td class="total_m2">0</td>' +
+                        '</tr>');
+                }
+            </script>
+        </tbody>
+    </table>
+    <button onclick="calcular()">Calcular</button>
+</div>
+
+<div class="section">
+    <h2>Resultados</h2>
+    <p class="highlight" id="valor_m2">Valor por m²: R$ 0,00</p>
+    <p id="custo_obra">Custo Geral da Obra: R$ 0,00</p>
+    <p id="vgv">VGV Geral da Obra: R$ 0,00</p>
+    <p class="highlight" id="lucro_liquido">Lucro Líquido: R$ 0,00</p>
+    <p class="highlight" id="roi">ROI: 0,00%</p>
+    <textarea id="sugestoes" readonly></textarea>
+</div>
+
+<script>
+function calcular() {
+    const custo_m2 = parseFloat(document.getElementById("custo_m2").value) || 0;
+    const lucro = (parseFloat(document.getElementById("lucro_esperado").value) || 0) / 100;
+    const imposto = (parseFloat(document.getElementById("imposto").value) || 0) / 100;
+    const comissao = (parseFloat(document.getElementById("comissao").value) || 0) / 100;
+    const valor_permuta_extra = parseFloat(document.getElementById("valor_permuta_extra").value) || 0;
+
+    const rows = document.querySelectorAll("#unidades_table tbody tr");
+    let total_geral_m2 = 0;
+    let total_permuta_m2 = 0;
+    let sugestoes = "Sugestão de VGV por unidade:\nProprietário      Metragem       Qtd        Sugestão R$\n";
+
+    rows.forEach(row => {
+        const origem = row.cells[0].querySelector("select").value;
+        const metragem = parseFloat(row.cells[1].querySelector("input").value) || 0;
+        const quantidade = parseInt(row.cells[2].querySelector("input").value) || 0;
+        const total_m2 = metragem * quantidade;
+        row.cells[3].textContent = total_m2.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+
+        if (origem === "Permuta") {
+            total_permuta_m2 += total_m2;
+        }
+
+        total_geral_m2 += total_m2;
+    });
+
+    const metragem_liquida = Math.max(total_geral_m2 - total_permuta_m2, 1);
+    const custo_total_construcao = (total_geral_m2 - total_permuta_m2) * custo_m2;
+    const custo_total_permuta = (total_permuta_m2 * custo_m2) + valor_permuta_extra;
+    const custo_total_obra = custo_total_construcao + custo_total_permuta;
+    const vgv = (custo_total_obra * (1 + lucro)) / (1 - (imposto + comissao));
+    const lucro_liquido = vgv - custo_total_obra;
+    const roi = (lucro_liquido / custo_total_obra) * 100;
+    const valor_m2 = vgv / metragem_liquida;
+
+    document.getElementById("valor_m2").textContent = "Valor por m²: " + valor_m2.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("custo_obra").textContent = "Custo Geral da Obra: " + custo_total_obra.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("vgv").textContent = "VGV Geral da Obra: " + vgv.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("lucro_liquido").textContent = "Lucro Líquido: " + lucro_liquido.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("roi").textContent = "ROI: " + roi.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) + "%";
+
+    rows.forEach(row => {
+        const origem = row.cells[0].querySelector("select").value;
+        const metragem = parseFloat(row.cells[1].querySelector("input").value) || 0;
+        const quantidade = parseInt(row.cells[2].querySelector("input").value) || 0;
+        const sugestao_valor = valor_m2 * metragem;
+        sugestoes += `${origem.padEnd(15)}${metragem.toFixed(2).padEnd(15)}${String(quantidade).padEnd(10)}${sugestao_valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}\n`;
+    });
+
+    document.getElementById("sugestoes").value = sugestoes;
+}
+</script>
+
+</body>
+</html>
