@@ -26,6 +26,7 @@ const usuariosLower = {
   "kaleu": "12345",
   "michael": "12345",
   "geison": "12345",
+  "jhony": "12345",
   "peterson": "12345"
 };
 
