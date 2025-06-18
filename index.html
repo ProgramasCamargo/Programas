@@ -9,6 +9,9 @@
       background-color: #2617ff;
       text-align: center;
       padding: 50px;
+      margin: 0;
+      min-height: 100vh;
+      position: relative;
     }
     h1, h2 {
       color: #000000;
@@ -34,14 +37,21 @@
       background-color: #005fa3;
       color: white;
     }
+    /* Botão logout fixo e destacado */
     .logout {
-      margin-top: 30px;
-      padding: 10px 20px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 25px;
       background-color: #ff4444;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+      z-index: 1000;
     }
     .logout:hover {
       background-color: #cc0000;
@@ -50,7 +60,7 @@
 </head>
 <body>
 
-  <!-- Proteção: redireciona para login se não estiver autenticado -->
+  <!-- Verificação de login -->
   <script>
     if (sessionStorage.getItem("logadoCamargo") !== "sim") {
       window.location.href = "login.html";
@@ -75,7 +85,7 @@
     document.getElementById("nomeUsuario").innerText =
       sessionStorage.getItem("usuarioCamargo") || "Usuário";
 
-    // Função de logout
+    // Função logout
     function logout() {
       sessionStorage.clear();
       location.href = "login.html";
