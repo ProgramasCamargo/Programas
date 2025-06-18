@@ -4,28 +4,28 @@ function removeAcentos(str) {
 }
 
 const usuariosLower = {
-  "guilherme": "Guilherme12345",
-  "alex": "Alex12345",
-  "katlrin": "Katlrin12345",
-  "eduarda": "Eduarda12345",
-  "brayan": "Brayan12345",
-  "maykon": "Maykon12345",
-  "lucas": "Lucas12345",
-  "osvaldo": "Osvaldo12345",
-  "paulo": "Paulo12345",
-  "fossile": "Fossile12345",
-  "frigheto": "Frigheto12345",
-  "deivison": "Deivison12345",
-  "thiago": "Thiago12345",
-  "hernane": "Hernane12345",
-  "silvio": "Silvio12345",
-  "anna": "Anna12345",
-  "sergio": "Sergio12345",  // sem acento
-  "joao": "João12345",     // senha com acento, ok
-  "anderson": "Anderson12345",
-  "kaleu": "Kaleu12345",
-  "geison": "Geison12345",
-  "peterson": "Peterson12345"
+  "guilherme": "12345",
+  "alex": "12345",
+  "katlrin": "12345",
+  "eduarda": "12345",
+  "brayan": "12345",
+  "maykon": "12345",
+  "lucas": "12345",
+  "osvaldo": "12345",
+  "paulo": "12345",
+  "fossile": "12345",
+  "frigheto": "12345",
+  "deivison": "12345",
+  "thiago": "12345",
+  "hernane": "12345",
+  "silvio": "12345",
+  "anna": "12345",
+  "sergio": "12345",  // sem acento
+  "joao": "12345",     // senha com acento, ok
+  "anderson": "12345",
+  "kaleu": "12345",
+  "geison": "12345",
+  "peterson": "12345"
 };
 
 function login() {
