@@ -1,9 +1,8 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Ferramentas da Camargo</title>
+  <title>Login - Ferramentas Camargo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,8 +46,9 @@
       const s = document.getElementById("senha").value;
 
       if (autenticar(u, s)) {
-        // Salva flag de login no navegador
-        localStorage.setItem("logadoCamargo", "sim");
+        // Sessão válida só enquanto a aba estiver aberta
+        sessionStorage.setItem("logadoCamargo", "sim");
+        sessionStorage.setItem("usuarioCamargo", u);
         window.location.href = "index.html";
       } else {
         document.getElementById("mensagem").innerText = "Usuário ou senha inválidos.";
