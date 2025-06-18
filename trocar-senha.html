@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trocar Senha</title>
+  <style>
+    body {
+      background-color: #2617ff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2617ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h2>Trocar Senha</h2>
+    <input type="password" id="novaSenha" placeholder="Nova senha">
+    <button onclick="salvarNovaSenha()">Salvar</button>
+  </div>
+
+  <script>
+    function salvarNovaSenha() {
+      const novaSenha = document.getElementById("novaSenha").value.trim();
+      const usuario = sessionStorage.getItem("usuarioCamargo");
+
+      if (novaSenha.length < 8) {
+        alert("A senha deve ter no mínimo 8 caracteres.");
+        return;
+      }
+
+      // Salva nova senha no localStorage
+      localStorage.setItem(`senha_${usuario}`, novaSenha);
+      localStorage.setItem(`senhaTrocada_${usuario}`, "sim");
+      alert("Senha alterada com sucesso!");
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
