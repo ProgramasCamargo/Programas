@@ -24,7 +24,7 @@ const usuariosLower = {
   "joao": "12345",     // senha com acento, ok
   "anderson": "12345",
   "kaleu": "12345",
-  "Michael": "12345",
+  "michael": "12345",
   "geison": "12345",
   "peterson": "12345"
 };
