@@ -6,101 +6,68 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: url('1.png');
-      background-repeat: no-repeat;
-      background-position: center center;
+      background: url('1.png') no-repeat center center fixed;
       background-size: contain;
-      background-color: #2617ff;
-      margin: 0;
-      height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #2617ff;
     }
-
-    .login-container {
-      background-color: #ffffffcc; /* branco com transparência */
+    .login-box {
+      background-color: rgba(255, 255, 255, 0.9);
       padding: 30px 40px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
       width: 320px;
       text-align: center;
     }
-
     h2 {
       margin-bottom: 20px;
-      color: #000000;
+      color: #2617ff;
     }
-
-    input[type="text"],
-    input[type="password"] {
+    input {
       width: 100%;
       padding: 12px;
-      margin: 10px 0 20px 0;
-      border: 1.5px solid #ccc;
-      border-radius: 8px;
+      margin: 10px 0;
       font-size: 16px;
-      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
-
     button {
       width: 100%;
       padding: 12px;
       background-color: #2617ff;
-      border: none;
       color: white;
       font-size: 18px;
-      border-radius: 8px;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-top: 15px;
     }
-
     button:hover {
-      background-color: #0000cc;
+      background-color: #180fd4;
     }
-
-    .error {
-      color: red;
-      margin-bottom: 10px;
+    #erro {
       display: none;
+      margin-top: 12px;
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <h2>Login Camargo</h2>
-
-    <div id="erro" class="error">Usuário ou senha incorretos!</div>
-
-    <input type="text" id="usuario" placeholder="Usuário" autocomplete="username" />
-    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
-
+  <div class="login-box">
+    <h2>Login - Ferramentas Camargo</h2>
+    <input type="text" id="usuario" placeholder="Usuário" autocomplete="off" />
+    <input type="password" id="senha" placeholder="Senha" autocomplete="off" />
     <button onclick="login()">Entrar</button>
+    <div id="erro">Usuário ou senha incorretos!</div>
   </div>
 
-  <script>
-    // Usuários válidos (exemplo simples)
-    const usuarios = {
-      'joao': '1234',
-      'maria': 'abcd',
-      'admin': 'senha123'
-    };
-
-    function login() {
-      const usuario = document.getElementById('usuario').value.trim();
-      const senha = document.getElementById('senha').value.trim();
-      const erro = document.getElementById('erro');
-
-      if (usuarios[usuario] && usuarios[usuario] === senha) {
-        sessionStorage.setItem('logadoCamargo', 'sim');
-        sessionStorage.setItem('usuarioCamargo', usuario);
-        window.location.href = 'index.html';
-      } else {
-        erro.style.display = 'block';
-      }
-    }
-  </script>
-
+  <script src="auth.js"></script>
 </body>
 </html>
