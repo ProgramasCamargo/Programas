@@ -1,4 +1,4 @@
-f<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -44,8 +44,14 @@ f<!DOCTYPE html>
     <a class="botao" href="simulador.html" target="_blank">Simulador de custo</a>
     <a class="botao" href="Teste 02.html" target="_blank">EM BREVE</a>
     <a class="botao" href="ficha.html" target="_blank">EM BREVE</a>
-    <!-- Adicione mais botões conforme seus arquivos -->
   </div>
+
+  <!-- Proteção com verificação de login -->
+  <script>
+    if (localStorage.getItem("logadoCamargo") !== "sim") {
+      window.location.href = "login.html";
+    }
+  </script>
 
 </body>
 </html>
