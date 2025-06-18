@@ -1,4 +1,8 @@
-// Cria um objeto novo com todas as chaves em minúsculas para facilitar a busca
+// Remove acentos do texto
+function removeAcentos(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 const usuariosLower = {
   "guilherme": "Guilherme12345",
   "alex": "Alex12345",
@@ -16,8 +20,8 @@ const usuariosLower = {
   "hernane": "Hernane12345",
   "silvio": "Silvio12345",
   "anna": "Anna12345",
-  "sérgio": "Sérgio12345",
-  "joão": "João12345",
+  "sergio": "Sergio12345",  // sem acento
+  "joao": "João12345",     // senha com acento, ok
   "anderson": "Anderson12345",
   "kaleu": "Kaleu12345",
   "geison": "Geison12345",
@@ -25,13 +29,13 @@ const usuariosLower = {
 };
 
 function login() {
-  const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+  let usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+  usuarioInput = removeAcentos(usuarioInput);
   const senhaInput = document.getElementById('senha').value.trim();
   const erro = document.getElementById('erro');
 
   if (usuariosLower[usuarioInput] && usuariosLower[usuarioInput] === senhaInput) {
     sessionStorage.setItem('logadoCamargo', 'sim');
-    // Grava o usuário no formato original, com a primeira letra maiúscula (só um exemplo simples)
     sessionStorage.setItem('usuarioCamargo', usuarioInput.charAt(0).toUpperCase() + usuarioInput.slice(1));
     window.location.href = 'index.html';
   } else {
