@@ -8,26 +8,28 @@
       font-family: Arial, sans-serif;
       background: url('1.png') no-repeat center center fixed;
       background-size: contain;
+      background-color: #2617ff;
+      margin: 0;
+      height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #2617ff;
     }
+
     .login-box {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgba(255, 255, 255, 0.92);
       padding: 30px 40px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
       width: 320px;
       text-align: center;
     }
+
     h2 {
       margin-bottom: 20px;
       color: #2617ff;
     }
+
     input {
       width: 100%;
       padding: 12px;
@@ -36,6 +38,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -47,9 +50,11 @@
       cursor: pointer;
       margin-top: 15px;
     }
+
     button:hover {
       background-color: #180fd4;
     }
+
     #erro {
       display: none;
       margin-top: 12px;
@@ -68,7 +73,55 @@
     <div id="erro">Usuário ou senha incorretos!</div>
   </div>
 
-  <script src="auth.js"></script>
-  
+  <script>
+    // Função para remover acentos
+    function removeAcentos(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    // Lista de usuários e senhas (usuário formatado: minúsculo e sem acento)
+    const usuarios = {
+      "guilherme": "12345",
+      "alex": "12345",
+      "katlrin": "12345",
+      "eduarda": "12345",
+      "brayan": "12345",
+      "maykon": "12345",
+      "lucas": "12345",
+      "osvaldo": "12345",
+      "paulo": "12345",
+      "fossile": "12345",
+      "frigheto": "12345",
+      "deivison": "12345",
+      "thiago": "12345",
+      "hernane": "12345",
+      "silvio": "12345",
+      "anna": "12345",
+      "sergio": "12345",
+      "joao": "12345",
+      "anderson": "12345",
+      "kaleu": "12345",
+      "geison": "12345",
+      "peterson": "12345",
+      "michael": "12345"
+    };
+
+    function login() {
+      const usuarioInput = document.getElementById('usuario').value.trim();
+      const senhaInput = document.getElementById('senha').value.trim();
+      const erro = document.getElementById('erro');
+
+      const usuarioFormatado = removeAcentos(usuarioInput.toLowerCase());
+
+      if (usuarios[usuarioFormatado] && usuarios[usuarioFormatado] === senhaInput) {
+        sessionStorage.setItem('logadoCamargo', 'sim');
+        sessionStorage.setItem('usuarioCamargo', usuarioFormatado);
+        window.location.href = 'index.html';
+      } else {
+        erro.style.display = 'block';
+      }
+    }
+  </script>
+
 </body>
 </html>
