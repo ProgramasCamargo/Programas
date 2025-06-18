@@ -10,7 +10,7 @@
       text-align: center;
       padding: 50px;
     }
-    h1 {
+    h1, h2 {
       color: #000000;
     }
     .button-container {
@@ -32,24 +32,53 @@
     }
     .botao:hover {
       background-color: #005fa3;
+      color: white;
+    }
+    .logout {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logout:hover {
+      background-color: #cc0000;
     }
   </style>
 </head>
 <body>
 
+  <!-- Proteção: redireciona para login se não estiver autenticado -->
+  <script>
+    if (sessionStorage.getItem("logadoCamargo") !== "sim") {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <h1>Ferramentas da Camargo</h1>
+  <h2>Bem-vindo(a), <span id="nomeUsuario"></span></h2>
 
   <div class="button-container">
     <a class="botao" href="protocolo.html" target="_blank">Protocolo de contrato</a>
     <a class="botao" href="simulador.html" target="_blank">Simulador de custo</a>
     <a class="botao" href="Teste 02.html" target="_blank">EM BREVE</a>
     <a class="botao" href="ficha.html" target="_blank">EM BREVE</a>
+    <!-- Adicione mais botões conforme seus arquivos -->
   </div>
 
-  <!-- Proteção com verificação de login -->
+  <button class="logout" onclick="logout()">Sair</button>
+
   <script>
-    if (localStorage.getItem("logadoCamargo") !== "sim") {
-      window.location.href = "login.html";
+    // Mostra o nome do usuário logado
+    document.getElementById("nomeUsuario").innerText =
+      sessionStorage.getItem("usuarioCamargo") || "Usuário";
+
+    // Função de logout
+    function logout() {
+      sessionStorage.clear();
+      location.href = "login.html";
     }
   </script>
 
