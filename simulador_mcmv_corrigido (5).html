@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de Atendimento com Simulação</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background-color: #f5f7fa; padding: 20px; max-width: 1100px; margin: auto; }
+    h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+    label { font-weight: bold; color: #34495e; display: block; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 25px; background-color: white; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
+    th { background-color: #ecf0f1; color: #2c3e50; font-size: 16px; }
+    .titulo { background-color: #dce6f1; color: #2c3e50; font-weight: bold; font-size: 15px; text-align: left; padding-left: 10px; }
+    input, select { width: 100%; padding: 6px; border: 1px solid #b2bec3; border-radius: 4px; font-size: 14px; }
+    tr:nth-child(even) td { background-color: #f8f9fa; }
+    #simularBtn { margin: 20px auto; display: block; padding: 10px 20px; background-color: #3498db; color: white; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; }
+    #erroMensagem { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
+    #resultado h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h2>Ficha de Atendimento ao Cliente</h2>
+  <label>Quantos clientes?
+    <input type="number" id="qtdClientes" min="1" max="10" value="1" onchange="gerarTabela()">
+  </label>
+  <div id="tabelaContainer"></div>
+  <button id="simularBtn" onclick="simularCenarios()">Simular</button>
+  <div id="erroMensagem"></div>
+  <div id="resultado"></div>
+<script>
+  function calcularValorFinanciado(parcela, taxaAnual, prazo) {
+    const i = taxaAnual/100/12;
+    const fator = Math.pow(1+i,prazo);
+    return parcela*(fator-1)/(i*fator);
+  }
+  function determinarTaxaJuros(renda, valorImovel) {
+    // Faixa 2: até R$ 245.000
+    if (renda <= 4700 && valorImovel <= 245000) return renda <= 3500 ? 5.5 : 6.5;
+    // Faixa 3: até R$ 350.000
+    if (renda <= 8600 && valorImovel <= 350000) return 7.66;
+    // Faixa 4: acima de R$ 350.000
+    return 10.0;
+  }
+  function gerarTabela() {
+    const qtd = parseInt(document.getElementById('qtdClientes').value) || 1;
+    const c = document.getElementById('tabelaContainer'); c.innerHTML = '';
+    const cols = qtd;
+    const arrs = { nomes:[], celulares:[], estCiv:[], trabs:[], rendas:[], fgts:[], entradas:[], parcelas:[], cpfs:[], nasc:[], decimos:[] };
+    for (let i = 1; i <= qtd; i++) {
+      arrs.nomes.push(`<td><input placeholder='Nome ${i}'></td>`);
+      arrs.celulares.push(`<td><input placeholder='(xx) xxxxx-xxxx'></td>`);
+      arrs.estCiv.push(`<td><select><option>Selecione</option><option>Solteiro</option><option>Casado</option><option>Divorciado</option></select></td>`);
+      arrs.trabs.push(`<td><input placeholder='Trabalho ${i}'></td>`);
+      arrs.rendas.push(`<td><input class='renda' type='number' placeholder='R$'></td>`);
+      arrs.fgts.push(`<td><input class='fgts' type='number' placeholder='FGTS'></td>`);
+      arrs.entradas.push(`<td><input class='entrada' type='number' placeholder='Entrada'></td>`);
+      arrs.parcelas.push(`<td><input class='parcela' type='number' placeholder='Parcela mensal'></td>`);
+      arrs.cpfs.push(`<td><input placeholder='CPF'></td>`);
+      arrs.nasc.push(`<td><input type='date'></td>`);
+      arrs.decimos.push(`<td><input class='decimo' type='number' placeholder='13º'></td>`);
+    }
+    c.innerHTML = `
+      <table><tr><th colspan='${cols+1}' class='titulo'>Informações Básicas</th></tr>
+        <tr><td>Nome</td>${arrs.nomes.join('')}</tr>
+        <tr><td>Celular</td>${arrs.celulares.join('')}</tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Perfil Residencial</th></tr>
+        <tr><td>Bairro</td><td colspan='${cols}'><input></td></tr>
+        <tr><td>Próprio?</td><td colspan='${cols}'><select><option>Sim</option><option>Não</option></select></td></tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Estado Civil</th></tr>
+        <tr><td>Cliente</td>${arrs.estCiv.join('')}</tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Emprego</th></tr>
+        <tr><td>Trabalho</td>${arrs.trabs.join('')}</tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Renda e FGTS</th></tr>
+        <tr><td>Renda</td>${arrs.rendas.join('')}</tr>
+        <tr><td>FGTS</td>${arrs.fgts.join('')}</tr>
+        <tr><td>Entrada</td>${arrs.entradas.join('')}</tr>
+        <tr><td>Parcela</td>${arrs.parcelas.join('')}</tr>
+        <tr><td>13º</td>${arrs.decimos.join('')}</tr>
+        <tr><td>Veículo</td><td colspan='${cols}'><input id='valorCarro' type='number' placeholder='R$'></td></tr>
+        <tr><td>PPR</td><td colspan='${cols}'><input id='valorPPR' type='number' placeholder='R$'></td></tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Impedimentos</th></tr>
+        <tr><td>Carro fin.</td><td colspan='${cols}'><select><option>Não</option><option>Sim</option></select></td></tr>
+        <tr><td>Empréstimo</td><td colspan='${cols}'><select><option>Não</option><option>Sim</option></select></td></tr>
+        <tr><td>Imóvel fin.</td><td colspan='${cols}'><select><option>Não</option><option>Sim</option></select></td></tr>
+      </table>
+      <table><tr><th colspan='${cols+1}' class='titulo'>Dados Finais</th></tr>
+        <tr><td>CPF</td>${arrs.cpfs.join('')}</tr>
+        <tr><td>Data Nasc.</td>${arrs.nasc.join('')}</tr>
+      </table>
+    `;
+  }
+  document.addEventListener('DOMContentLoaded', gerarTabela);
+  function simularCenarios() {
+    document.getElementById('erroMensagem').innerText = '';
+    const get = sel => [...document.querySelectorAll(sel)].map(el => parseFloat(el.value) || 0);
+    const decimos = get('.decimo'), rendas = get('.renda'), entradas = get('.entrada'), fgts = get('.fgts'), parcelas = get('.parcela');
+    const carro = parseFloat(document.getElementById('valorCarro').value) || 0;
+    const ppr = parseFloat(document.getElementById('valorPPR').value) || 0;
+    if (rendas.some(v => v <= 0) || parcelas.some(v => v <= 0)) {
+      return document.getElementById('erroMensagem').innerText = '⚠️ Preencha renda e parcela.';
+    }
+    const soma = (a,b) => a+b;
+    const rendaTotal = rendas.reduce(soma,0);
+    const entradaTotal = entradas.reduce(soma,0);
+    const fgtsTotal = fgts.reduce(soma,0);
+    const parcelaSum = parcelas.reduce(soma,0);
+    const prazo = 420;
+    const parcelaMax = rendaTotal * 0.3;
+    const financMax = calcularValorFinanciado(parcelaMax, determinarTaxaJuros(rendaTotal, parcelaMax/0.3), prazo);
+    const imovMax = financMax / 0.8;
+    const entNec = imovMax * 0.2;
+    // agora determina a taxa correta usando valor do imóvel
+    const taxa = determinarTaxaJuros(rendaTotal, imovMax);
+    const entPoss = entradaTotal + fgtsTotal + carro + ppr;
+    const imovPoss = entPoss / 0.2;
+    const financPoss = imovPoss * 0.8;
+    const i = taxa/100/12;
+    const fator = Math.pow(1+i,prazo);
+    const parcEnt = financPoss * (i*fator)/(fator-1);
+    let acumul = entPoss;
+    let meses = 0;
+    const decTot = decimos.reduce(soma,0);
+    while (acumul < entNec) { meses++; acumul += parcelaSum; if (meses % 12 === 0) acumul += decTot; }
+    document.getElementById('resultado').innerHTML = `
+      <h2>Simulações</h2>
+      <table>
+        <tr><th colspan="2">Cenário 1 – pela renda</th></tr>
+        <tr><td>Valor imóvel</td><td>R$ ${imovMax.toFixed(2)}</td></tr>
+        <tr><td>Financiamento</td><td>R$ ${financMax.toFixed(2)}</td></tr>
+        <tr><td>Entrada</td><td>R$ ${entNec.toFixed(2)}</td></tr>
+        <tr><td>Parcela máx</td><td>R$ ${parcelaMax.toFixed(2)}</td></tr>
+        <tr><td>Taxa</td><td>${taxa.toFixed(2)}%</td></tr>
+      </table>
+      <table>
+        <tr><th colspan="2">Cenário 2 – pelos recursos</th></tr>
+        <tr><td>Total disp.</td><td>R$ ${entPoss.toFixed(2)}</td></tr>
+        <tr><td>Valor imóvel</td><td>R$ ${imovPoss.toFixed(2)}</td></tr>
+        <tr><td>Financiamento</td><td>R$ ${financPoss.toFixed(2)}</td></tr>
+        <tr><td>Entrada</td><td>R$ ${(imovPoss*0.2).toFixed(2)}</td></tr>
+        <tr><td>Parcela</td><td>R$ ${parcEnt.toFixed(2)}</td></tr>
+      </table>
+      <table>
+        <tr><th colspan="2">Cenário 3 – tempo até entrada</th></tr>
+        <tr><td>Entrada nec.</td><td>R$ ${entNec.toFixed(2)}</td></tr>
+        <tr><td>Já possui</td><td>R$ ${entPoss.toFixed(2)}</td></tr>
+        <tr><td>Falta</td><td>R$ ${(entNec-entPoss>0?entNec-entPoss:0).toFixed(2)}</td></tr>
+        <tr><td>Contrib/mês</td><td>R$ ${parcelaSum.toFixed(2)}</td></tr>
+        <tr><td>13º anual</td><td>R$ ${decTot.toFixed(2)}</td></tr>
+        <tr><td>Meses</td><td>${meses}</td></tr>
+      </table>
+    `;
+  }
+</script>
+</body>
+</html>
